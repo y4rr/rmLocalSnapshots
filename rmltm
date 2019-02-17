@@ -1,0 +1,107 @@
+#!/usr/bin/env python3
+"""rmltm
+
+    Removes local TimeMachine backups
+
+    (c) 2018 Alex Merkel
+    See LICENSE file
+"""
+
+
+import os
+import subprocess
+import colored
+from colored import stylize
+
+# ---------------------------------------------------------------------------- #
+def main():
+    """The main function"""
+
+    if isroot():
+        backups = getbackups()
+        if backups:
+            msg = stylize("Are you sure you want to delete all local backups?",
+                          colored.fg("yellow") + colored.attr("bold"))
+            if confirm(msg):
+                if deletebackups(backups):
+                    print(stylize("All local backups removed",
+                                  colored.fg("green") + colored.attr("bold")))
+        else:
+            print(stylize("No local backups to remove",
+                          colored.fg("green") + colored.attr("bold")))
+    else:
+        print(stylize("You need to have root privileges to run this script",
+                      colored.fg("red") + colored.attr("bold")))
+# ############################################################################ #
+
+# ---------------------------------------------------------------------------- #
+def isroot():
+    """Checks if the script is executed as root
+
+    returns:
+        true if root, else false
+    """
+    return os.geteuid() == 0
+# ############################################################################ #
+
+# ---------------------------------------------------------------------------- #
+def getbackups():
+    """Reads all current local backups
+
+    returns:
+        List of backups
+    """
+    cmd = subprocess.Popen(['tmutil', 'listlocalsnapshotdates'],
+                           stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+
+    backups, _ = cmd.communicate()
+
+    backups = backups.splitlines()
+    return backups[1:]
+# ############################################################################ #
+
+# ---------------------------------------------------------------------------- #
+def deletebackups(backups):
+    """Deletes all backups in given list
+
+    Args:
+        backups (list): List of backups
+
+    returns:
+        True if successful
+    """
+    i = 0
+    count = len(backups)
+    for item in backups:
+        i += 1
+        print("Removing backup {:d} of {:d}".format(i, count))
+        subprocess.check_output(['tmutil', 'deletelocalsnapshots', item])
+
+    return True
+# ############################################################################ #
+
+# ---------------------------------------------------------------------------- #
+def confirm(msg):
+    """
+    Ask the user to confirm by pressing Y or N (case-insensitive)
+
+    Args:
+        msg (string): The question to ask the user
+
+    returns:
+        True if the answer is Y
+    """
+    answer = ""
+    while answer not in ["y", "n"]:
+        answer = input(msg + " [Y/N] ").lower()
+
+    return answer == "y"
+# ############################################################################ #
+
+
+# ---------------------------------------------------------------------------- #
+if __name__ == "__main__":
+    """Default"""
+    main()
+# ############################################################################ #
+

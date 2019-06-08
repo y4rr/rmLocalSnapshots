@@ -10,8 +10,6 @@
 
 import os
 import subprocess
-import colored
-from colored import stylize
 
 # ---------------------------------------------------------------------------- #
 def main():
@@ -20,18 +18,14 @@ def main():
     if isroot():
         backups = getbackups()
         if backups:
-            msg = stylize("Are you sure you want to delete all local backups?",
-                          colored.fg("yellow") + colored.attr("bold"))
+            msg = "Are you sure you want to delete all local backups?"
             if confirm(msg):
                 if deletebackups(backups):
-                    print(stylize("All local backups removed",
-                                  colored.fg("green") + colored.attr("bold")))
+                    print("All local backups removed")
         else:
-            print(stylize("No local backups to remove",
-                          colored.fg("green") + colored.attr("bold")))
+            print("No local backups to remove")
     else:
-        print(stylize("You need to have root privileges to run this script",
-                      colored.fg("red") + colored.attr("bold")))
+        print("You need to have root privileges to run this script")
 # ############################################################################ #
 
 # ---------------------------------------------------------------------------- #

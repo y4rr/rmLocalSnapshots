@@ -3,14 +3,13 @@
 
     Removes local TimeMachine snapshots
 
-    (c) 2018 Alex Merkel
+    (c) 2019 Alex Merkel, y4rr
     See LICENSE file
 """
 
 
 import os
 import subprocess
-from pprint import pprint
 
 # ---------------------------------------------------------------------------- #
 def main():
